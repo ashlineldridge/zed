@@ -19,6 +19,7 @@ pub struct AllLanguageModelSettingsContent {
     pub openai: Option<OpenAiSettingsContent>,
     pub openai_compatible: Option<HashMap<Arc<str>, OpenAiCompatibleSettingsContent>>,
     pub vercel: Option<VercelSettingsContent>,
+    pub vertex: Option<VertexSettingsContent>,
     pub x_ai: Option<XAiSettingsContent>,
     #[serde(rename = "zed.dev")]
     pub zed_dot_dev: Option<ZedDotDevSettingsContent>,
@@ -293,6 +294,45 @@ pub struct VercelAvailableModel {
     pub max_tokens: u64,
     pub max_output_tokens: Option<u64>,
     pub max_completion_tokens: Option<u64>,
+}
+
+#[with_fallible_options]
+#[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema, MergeFrom)]
+pub struct VertexSettingsContent {
+    /// GCP project ID
+    pub project: Option<String>,
+    /// GCP region/location (e.g., "us-east5", "us-central1")
+    pub location: Option<String>,
+    /// Shell command to obtain access token (default: "gcloud auth print-access-token")
+    pub credentials_command: Option<String>,
+    /// Token refresh interval in seconds (default: 1800 = 30 min)
+    pub credentials_refresh_interval: Option<u64>,
+    pub available_models: Option<Vec<VertexAvailableModel>>,
+}
+
+#[with_fallible_options]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema, MergeFrom)]
+pub struct VertexAvailableModel {
+    /// The model's name in Vertex AI. e.g. gemini-2.5-flash, claude-sonnet-4-5@20250929
+    pub name: String,
+    /// The model's name in Zed's UI, such as in the model selector dropdown menu.
+    pub display_name: Option<String>,
+    /// The model's context window size.
+    pub max_tokens: u64,
+    pub max_output_tokens: Option<u64>,
+    /// "google" or "anthropic" (auto-detected from model name if omitted)
+    pub publisher: Option<VertexPublisher>,
+    #[serde(serialize_with = "crate::serialize_optional_f32_with_two_decimal_places")]
+    pub default_temperature: Option<f32>,
+    /// The model's mode (e.g. thinking)
+    pub mode: Option<ModelMode>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema, MergeFrom)]
+#[serde(rename_all = "lowercase")]
+pub enum VertexPublisher {
+    Google,
+    Anthropic,
 }
 
 #[with_fallible_options]

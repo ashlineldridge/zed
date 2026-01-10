@@ -11,4 +11,5 @@ pub mod open_ai;
 pub mod open_ai_compatible;
 pub mod open_router;
 pub mod vercel;
+pub mod vertex;
 pub mod x_ai;

@@ -8,7 +8,7 @@ use crate::provider::{
     deepseek::DeepSeekSettings, google::GoogleSettings, lmstudio::LmStudioSettings,
     mistral::MistralSettings, ollama::OllamaSettings, open_ai::OpenAiSettings,
     open_ai_compatible::OpenAiCompatibleSettings, open_router::OpenRouterSettings,
-    vercel::VercelSettings, x_ai::XAiSettings,
+    vercel::VercelSettings, vertex::VertexSettings, x_ai::XAiSettings,
 };
 
 #[derive(Debug, RegisterSetting)]
@@ -24,6 +24,7 @@ pub struct AllLanguageModelSettings {
     pub openai: OpenAiSettings,
     pub openai_compatible: HashMap<Arc<str>, OpenAiCompatibleSettings>,
     pub vercel: VercelSettings,
+    pub vertex: VertexSettings,
     pub x_ai: XAiSettings,
     pub zed_dot_dev: ZedDotDevSettings,
 }
@@ -44,6 +45,7 @@ impl settings::Settings for AllLanguageModelSettings {
         let openai = language_models.openai.unwrap();
         let openai_compatible = language_models.openai_compatible.unwrap();
         let vercel = language_models.vercel.unwrap();
+        let vertex = language_models.vertex.unwrap();
         let x_ai = language_models.x_ai.unwrap();
         let zed_dot_dev = language_models.zed_dot_dev.unwrap();
         Self {
@@ -104,6 +106,13 @@ impl settings::Settings for AllLanguageModelSettings {
             vercel: VercelSettings {
                 api_url: vercel.api_url.unwrap(),
                 available_models: vercel.available_models.unwrap_or_default(),
+            },
+            vertex: VertexSettings {
+                project: vertex.project,
+                location: vertex.location,
+                credentials_command: vertex.credentials_command,
+                credentials_refresh_interval: vertex.credentials_refresh_interval,
+                available_models: vertex.available_models.unwrap_or_default(),
             },
             x_ai: XAiSettings {
                 api_url: x_ai.api_url.unwrap(),
